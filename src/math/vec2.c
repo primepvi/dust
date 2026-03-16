@@ -15,7 +15,6 @@ Vec2 vec2_normalize(Vec2 vec) {
 float vec2_magnitude(Vec2 vec) { return sqrtf(vec.x * vec.x + vec.y * vec.y); }
 float vec2_angle(Vec2 vec) { return atan2f(vec.y, vec.x); }
 
-
 Vec2 vec2_add(Vec2 a, Vec2 b) { return VEC2(a.x + b.x, a.y + b.y); }
 Vec2 vec2_sub(Vec2 a, Vec2 b) { return VEC2(a.x - b.x, a.y - b.y); }
 Vec2 vec2_scale(Vec2 vec, float scalar) {
@@ -37,4 +36,4 @@ float vec2_dot(Vec2 a, Vec2 b) { return a.x * b.x + a.y * b.y; }
 float vec2_distance(Vec2 a, Vec2 b) {
   Vec2 diff = vec2_sub(b, a);
   return vec2_magnitude(diff);
-};
+}
