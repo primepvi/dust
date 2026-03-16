@@ -1,5 +1,5 @@
 CC = clang
-CFLAGS = -Wall -g -Iinclude
+CFLAGS = -Wall -g -Iinclude -lm
 
 SRCS = $(shell find src -name "*.c")
 OBJS = $(patsubst src/%.c, build/%.o, $(SRCS))
