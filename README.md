@@ -1,4 +1,4 @@
-<img src="assets/logo.png"><img/>
+<img src="assets/logo.png" width="600px"><img/>
 
 # About
 
