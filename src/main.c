@@ -1,8 +1,10 @@
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 
+#include "gl/shader.h"
 #include "gl/vao.h"
 #include "gl/vbo.h"
+
 #include "math/vec2.h"
 
 int main(void) {
@@ -16,39 +18,13 @@ int main(void) {
 
   gladLoadGLLoader((GLADloadproc)glfwGetProcAddress);
 
-  const char *vert_src = "#version 330 core\n"
-                         "layout(location=0) in vec3 a_pos;\n"
-                         "void main() {\n"
-                         "    gl_Position = vec4(a_pos, 1.0);\n"
-                         "}\n";
+  Shader program =
+      shader_from_files("assets/shaders/main.vert", "assets/shaders/main.frag");
 
-  const char *frag_src = "#version 330 core\n"
-                         "out vec4 frag_color;\n"
-                         "void main() {\n"
-                         "    frag_color = vec4(1.0, 0.5, 0.2, 1.0);\n"
-                         "}\n";
-
-  GLuint vert = glCreateShader(GL_VERTEX_SHADER);
-  glShaderSource(vert, 1, &vert_src, NULL);
-  glCompileShader(vert);
-
-  GLuint frag = glCreateShader(GL_FRAGMENT_SHADER);
-  glShaderSource(frag, 1, &frag_src, NULL);
-  glCompileShader(frag);
-
-  GLuint program = glCreateProgram();
-  glAttachShader(program, vert);
-  glAttachShader(program, frag);
-  glLinkProgram(program);
-
-  glDeleteShader(vert);
-  glDeleteShader(frag);
-
-  float vertices[] = {
-      // x      y       z
-      -0.5f, -0.5f, 0.f, // vértice da esquerda
-      0.5f,  -0.5f, 0.f, // vértice da direita
-      0.f,   0.5f,  0.f, // vértice do topo
+  Vec2 vertices[] = {
+      VEC2(-0.5f, -0.5f),
+      VEC2(0.5f, -0.5f),
+      VEC2(0.f, 0.5f),
   };
 
   VBO vbo = vbo_new(GL_STATIC_DRAW);
@@ -58,17 +34,17 @@ int main(void) {
   vbo_bind(vbo);
 
   vbo_data(vbo, vertices, sizeof(vertices));
-  vao_attrib(vao, 0, 3, GL_FLOAT, sizeof(float) * 3, 0);
+  vao_attrib(vao, 0, 2, GL_FLOAT, sizeof(float) * 2, 0);
 
   while (!glfwWindowShouldClose(window)) {
     glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT);
 
-    glUseProgram(program);
+    shader_bind(program);
     glDrawArrays(GL_TRIANGLES, 0, 3);
-    
+    shader_unbind();
 
-        glfwSwapBuffers(window);
+    glfwSwapBuffers(window);
     glfwPollEvents();
   }
 
@@ -77,6 +53,7 @@ int main(void) {
 
   vao_free(&vao);
   vbo_free(&vbo);
+  shader_free(&program);
 
   glfwDestroyWindow(window);
   glfwTerminate();
