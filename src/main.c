@@ -14,17 +14,19 @@
 #include "math/utils.h"
 #include "math/vec2.h"
 
+#include "core/window.h"
+
 int main(void) {
-  glfwInit();
-  glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-  glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
-  glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+  WindowConfig config = {
+    .width = 800,
+    .height = 600,
+    .resizable = true,
+    .title = "dust."
+  };
 
-  GLFWwindow *window = glfwCreateWindow(800, 600, "dust", NULL, NULL);
-  glfwMakeContextCurrent(window);
-
-  gladLoadGLLoader((GLADloadproc)glfwGetProcAddress);
-
+  bool opened = window_open(config);
+  if (!opened) return 1;
+  
   Shader program =
       shader_from_files("assets/shaders/main.vert", "assets/shaders/main.frag");
 
@@ -70,7 +72,7 @@ int main(void) {
 
   double prev = glfwGetTime();
 
-  while (!glfwWindowShouldClose(window)) {
+  while (!window_should_close()) {
     double now = glfwGetTime();
     float dt = (float)(now - prev);
     prev = now;
@@ -83,8 +85,8 @@ int main(void) {
 
     glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 
-    glfwSwapBuffers(window);
-    glfwPollEvents();
+    window_swap_buffers();
+    window_poll_events();
   }
 
   shader_unbind();
@@ -99,7 +101,7 @@ int main(void) {
   
   shader_free(&program);
 
-  glfwDestroyWindow(window);
-  glfwTerminate();
+  window_close();
+  
   return 0;
 }
