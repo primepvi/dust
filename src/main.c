@@ -8,8 +8,8 @@
 #include "gl/shader.h"
 #include "gl/vao.h"
 #include "gl/vbo.h"
+#include "gl/ebo.h"
 
-#include "math/color.h"
 #include "math/mat4.h"
 #include "math/utils.h"
 #include "math/vec2.h"
@@ -28,28 +28,34 @@ int main(void) {
   Shader program =
       shader_from_files("assets/shaders/main.vert", "assets/shaders/main.frag");
 
-  Vec2 vertices[] = {
-      VEC2(-0.5f, -0.5f),
-      VEC2(0.5f, -0.5f),
-      VEC2(0.f, 0.5f),
+  // clang-format off
+  float vertices[] = {
+    -0.5f, -0.5f,
+    0.5f, -0.5f,
+    0.5f, 0.5f,
+    -0.5f, 0.5f
   };
 
-  Color colors[] = {COLOR_GREEN, COLOR_BLUE, COLOR_RED};
+  uint32_t indexes[] = {
+    0, 1, 2,
+    2, 3, 0
+  };
 
-  VBO vertices_vbo = vbo_new(GL_STATIC_DRAW);
-  VBO colors_vbo = vbo_new(GL_STATIC_DRAW);
+  // clang-format on
+
+  VBO vbo = vbo_new(GL_STATIC_DRAW);
+  EBO ebo = ebo_new();
 
   VAO vao = vao_new();
 
   vao_bind(vao);
-  vbo_bind(vertices_vbo);
-  vbo_data(vertices_vbo, vertices, sizeof(vertices));
+  vbo_bind(vbo);
+  vbo_data(vbo, vertices, sizeof(vertices));
   vao_attrib(vao, 0, 2, GL_FLOAT, sizeof(float) * 2, 0);
 
-  vbo_bind(colors_vbo);
-  vbo_data(colors_vbo, colors, sizeof(colors));
-  vao_attrib(vao, 1, 4, GL_FLOAT, sizeof(float) * 4, 0);
-
+  ebo_bind(ebo);
+  ebo_data(ebo, indexes, 6);
+  
   shader_bind(program);
 
   Mat4 model = mat4_identity();
@@ -75,7 +81,7 @@ int main(void) {
     model = mat4_rotate_z(model, DEG2RAD(45.0f) * dt);
     shader_uniform_mat4(program, "u_model", model);
 
-    glDrawArrays(GL_TRIANGLES, 0, 3);
+    glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 
     glfwSwapBuffers(window);
     glfwPollEvents();
@@ -85,10 +91,12 @@ int main(void) {
 
   vao_unbind();
   vbo_unbind();
+  ebo_unbind();
 
   vao_free(&vao);
-  vbo_free(&vertices_vbo);
-  vbo_free(&colors_vbo);
+  vbo_free(&vbo);
+  ebo_free(&ebo);
+  
   shader_free(&program);
 
   glfwDestroyWindow(window);
