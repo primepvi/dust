@@ -1,12 +1,18 @@
+// clang-format off
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
+// clang-format on
+
+#include <math.h>
 
 #include "gl/shader.h"
 #include "gl/vao.h"
 #include "gl/vbo.h"
 
-#include "math/vec2.h"
 #include "math/color.h"
+#include "math/mat4.h"
+#include "math/utils.h"
+#include "math/vec2.h"
 
 int main(void) {
   glfwInit();
@@ -32,7 +38,7 @@ int main(void) {
 
   VBO vertices_vbo = vbo_new(GL_STATIC_DRAW);
   VBO colors_vbo = vbo_new(GL_STATIC_DRAW);
-  
+
   VAO vao = vao_new();
 
   vao_bind(vao);
@@ -43,18 +49,39 @@ int main(void) {
   vbo_bind(colors_vbo);
   vbo_data(colors_vbo, colors, sizeof(colors));
   vao_attrib(vao, 1, 4, GL_FLOAT, sizeof(float) * 4, 0);
-  
+
+  shader_bind(program);
+
+  Mat4 model = mat4_identity();
+  model = mat4_translate(model, VEC2(400.0f, 300.0f));
+  model = mat4_scale(model, VEC2(300.0f, 300.0f));
+
+  Mat4 view = mat4_view(VEC2(0.0f, 0.0f), 1.0f);
+  Mat4 proj = mat4_ortho(0.0f, 800.0f, 600.0f, 0.0f);
+
+  shader_uniform_mat4(program, "u_view", view);
+  shader_uniform_mat4(program, "u_proj", proj);
+
+  double prev = glfwGetTime();
+
   while (!glfwWindowShouldClose(window)) {
+    double now = glfwGetTime();
+    float dt = (float)(now - prev);
+    prev = now;
+
     glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT);
 
-    shader_bind(program);
+    model = mat4_rotate_z(model, DEG2RAD(45.0f) * dt);
+    shader_uniform_mat4(program, "u_model", model);
+
     glDrawArrays(GL_TRIANGLES, 0, 3);
-    shader_unbind();
 
     glfwSwapBuffers(window);
     glfwPollEvents();
   }
+
+  shader_unbind();
 
   vao_unbind();
   vbo_unbind();
