@@ -6,7 +6,7 @@ static struct {
   uint32_t width, height;
 } _state;
 
-static void _framebuffer_resize(GLFWwindow *w, int width, int height) {
+static void _callback_framebuffer_resize(GLFWwindow *w, int width, int height) {
   _state.width = width;
   _state.height = height;
   glViewport(0, 0, width, height);
@@ -44,7 +44,7 @@ bool window_open(WindowConfig config) {
     return false;
   }
 
-  glfwSetFramebufferSizeCallback(_state.handle, _framebuffer_resize);
+  glfwSetFramebufferSizeCallback(_state.handle, _callback_framebuffer_resize);
   glViewport(0, 0, _state.width, _state.height);
   glEnable(GL_BLEND);
   glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
