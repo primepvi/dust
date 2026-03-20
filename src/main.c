@@ -7,6 +7,7 @@
 #include "gl/shader.h"
 #include "gl/vao.h"
 #include "gl/vbo.h"
+#include "gl/texture.h"
 
 #include "math/mat4.h"
 #include "math/vec2.h"
@@ -19,6 +20,7 @@ static VBO vbo;
 static EBO ebo;
 static VAO vao;
 static Vec2 pos;
+static Texture sprite;
 
 void update(float dt) {
   Vec2 movement = VEC2_ZERO;
@@ -54,6 +56,9 @@ void draw(void) {
       mat4_ortho(0.0f, (float)window_width(), (float)window_height(), 0.0f);
 
   shader_bind(program);
+
+  texture_bind(sprite, 0);
+  shader_uniform_int(program, "u_sprite", 0);
   shader_uniform_mat4(program, "u_model", model);
   shader_uniform_mat4(program, "u_view", view);
   shader_uniform_mat4(program, "u_proj", proj);
@@ -69,11 +74,21 @@ int main(void) {
   if (!engine_init(config))
     return 1;
 
-  float vertices[] = {-0.5f, -0.5f, 0.5f, -0.5f, 0.5f, 0.5f, -0.5f, 0.5f};
+  // clang-format off
+  float vertices[] = {
+    -0.5f, -0.5f,  0.0f, 0.0f,
+    0.5f, -0.5f,  1.0f, 0.0f,
+    0.5f, 0.5f,  1.0f, 1.0f,
+    -0.5f, 0.5f, 0.0f, 1.0f,
+  };
+  
   uint32_t indexes[] = {0, 1, 2, 2, 3, 0};
+  // clang-format on
 
   program =
       shader_from_files("assets/shaders/main.vert", "assets/shaders/main.frag");
+
+  sprite = texture_from_file("assets/sprites/mario.png");
 
   vbo = vbo_new(GL_STATIC_DRAW);
   ebo = ebo_new();
@@ -82,7 +97,8 @@ int main(void) {
   vao_bind(vao);
   vbo_bind(vbo);
   vbo_data(vbo, vertices, sizeof(vertices));
-  vao_attrib(vao, 0, 2, GL_FLOAT, sizeof(float) * 2, 0);
+  vao_attrib(vao, 0, 2, GL_FLOAT, sizeof(float) * 4, 0);
+  vao_attrib(vao, 1, 2, GL_FLOAT, sizeof(float) * 4, sizeof(float) * 2);
   ebo_bind(ebo);
   ebo_data(ebo, indexes, 6);
   vao_unbind();
@@ -95,6 +111,7 @@ int main(void) {
   vbo_free(&vbo);
   ebo_free(&ebo);
   shader_free(&program);
+  texture_free(&sprite);
   engine_shutdown();
 
   return 0;

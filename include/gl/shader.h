@@ -16,5 +16,6 @@ void shader_bind(Shader shader);
 void shader_unbind(void);
 
 void shader_uniform_mat4(Shader shader, const char *uniform, Mat4 mat);
+void shader_uniform_int(Shader shader, const char *uniform, int val);
 
 #endif
