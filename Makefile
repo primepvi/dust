@@ -1,24 +1,18 @@
-CC = clang
-LFLAGS = -lm -lglfw -lGL -ldl
-IFLAGS = -Iinclude -Iexternal/glad/include -Iexternal/stb/include
-CFLAGS = -Wall -g $(IFLAGS)
+.PHONY: all engine sandbox clean compile
 
-SRCS = $(shell find src -name "*.c") external/glad/src/glad.c external/stb/src/stb_image.c
-OBJS = $(patsubst src/%.c, build/%.o, $(SRCS))
+all: engine sandbox
 
-BIN = dust
+engine:
+	$(MAKE) -C engine
 
-.PHONY: clean compile
-
-$(BIN): $(OBJS)
-	$(CC) $(CFLAGS) -o $@ $^ $(LFLAGS)
-
-build/%.o: src/%.c
-	@mkdir -p $(dir $@)
-	$(CC) $(CFLAGS) -c $< -o $@
+sandbox: engine
+	$(MAKE) -C sandbox
 
 clean:
-	rm -rf build $(BIN)
+	$(MAKE) -C engine clean
+	$(MAKE) -C sandbox clean
+	rm -f compile_commands.json
 
 compile:
-	make clean && bear -- make
+	$(MAKE) clean
+	bear -- $(MAKE) all
