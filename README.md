@@ -2,7 +2,7 @@
 
 # About
 
-Dust is a 2D Game Engine written in C, built on top of OpenGL (GLAD) and GLFW.
+Carbon is a 2D Game Engine written in C, built on top of OpenGL (GLAD) and GLFW.
 
 > [!WARNING]
 > Work in Progress
@@ -11,7 +11,7 @@ Dust is a 2D Game Engine written in C, built on top of OpenGL (GLAD) and GLFW.
 
 ```console
 $ make
-$ ./dust
+$ ./carbon
 ```
 
 ## License
