@@ -42,6 +42,7 @@ _Static_assert(sizeof(f64) == 8, "Type f64 size must be 8 bytes.");
 _Static_assert(sizeof(b8) == 1, "Type b8 size must be 1 byte.");
 _Static_assert(sizeof(b32) == 4, "Type b32 size must be 4 bytes.");
 
+// Platforms definitions.
 #define CB_PLATFORM_LINUX 1
 #define CB_PLATFORM_WINDOWS 2
 
