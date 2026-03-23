@@ -1,0 +1,17 @@
+{
+    "configurations": [
+        {
+            "name": "Win32",
+            "includePath": [
+                "${workspaceFolder}/engine/src/**",
+                "${workspaceFolder}/engine/external/glad/include/**",
+                "${workspaceFolder}/engine/external/stb/include/**"
+            ],
+            "defines": [
+                "CB_EXPORT"
+            ],
+            "compilerPath": "C:/Program Files/LLVM/bin/clang.exe"
+        }
+    ],
+    "version": 4
+}
